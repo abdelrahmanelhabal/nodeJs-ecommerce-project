@@ -4,7 +4,6 @@ const crypto = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 
-// register
 router.post("/register", async (req, res) => {
   try {
     const user = await userModel.create({
@@ -18,7 +17,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// login
 router.post("/login", async (req, res) => {
   try {
     const user = await userModel.findOne({ username: req.body.username });

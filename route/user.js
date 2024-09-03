@@ -8,6 +8,31 @@ const {
 const router = express.Router();
 const crypto = require("crypto-js");
 
+router.get("/status", verifyTokenAdmin, async (req, res) => {
+  const date = new Date();
+  const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+
+  try {
+    const data = await userModel.aggregate([
+      { $match: { createdAt: { $gte: lastYear } } },
+      {
+        $project: {
+          month: { $month: "$createdAt" },
+        },
+      },
+      {
+        $group: {
+          _id: "$month",
+          total: { $sum: 1 },
+        },
+      },
+    ]);
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 router.put("/:id", verifyTokenAuthorization, async (req, res) => {
   if (req.body.password) {
     req.body.password = crypto.AES.encrypt(
@@ -60,31 +85,5 @@ router.get("/", verifyTokenAdmin, async (req, res) => {
     res.status(500).json(err);
   }
 });
-
-// router.get("/status", verifyTokenAdmin, async (req, res) => {
-//   const date = new Date();
-//   const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
-
-//   try {
-//     const data = await userModel.aggregate([
-//       { $match: { createdAt: { $gte: lastYear } } },
-//       {
-//         $project: {
-//           month: { $month: "$createdAt" },
-//         },
-//       },
-//       {
-//         $group: {
-//           _id: "$month",
-//           total: { $sum: 1 },
-//         },
-//       },
-//     ]);
-//     res.status(200).json(data);
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-//   console.log(data);
-// });
 
 module.exports = router;

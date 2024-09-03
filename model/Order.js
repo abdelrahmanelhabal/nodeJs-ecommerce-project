@@ -23,7 +23,7 @@ const orderSchma = new mongoose.Schema(
       required: [true, "Amount required"],
     },
     address: {
-      type: object,
+      type: Object,
       required: [true, "Address required"],
     },
     status: {
